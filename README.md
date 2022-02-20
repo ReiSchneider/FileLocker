@@ -1,5 +1,5 @@
 # FileLocker
-A console application written in Java 11 that can 'lock' and 'unlock' files
+A console application written in Java 11 that can "lock" and "unlock" files
 
 # How to run 
 Make sure to compile and run with at least Java 11.
