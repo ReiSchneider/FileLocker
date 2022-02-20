@@ -1,17 +1,21 @@
 # FileLocker
 A console application written in Java 11 that can 'lock' and 'unlock' files
 
-## How to implement
-Implement the interface ```FileLocker.java``` and provide method definitions for the methods ```encrypt(String path, String key)``` and ```decrypt(String path, String key)```
-
-## How to use
+# How to run 
 Make sure to run with at least Java 11.
 
-Modify ```FileLockerFactory``` and provide own implementation for the ```getFileLocker()``` method
+Import the project to your IDE and run the `main` method from the `FileLockerConsole` console
 
-Get an instance of the ```FileLocker``` interface by calling the static method ```getFileLocker()``` of the ```FileLockerFactory``` class
+## How to implement
+Implement the interface ```FileLocker``` and provide method definitions for the methods `encrypt(String path, String key)` and `decrypt(String path, String key)`
 
-Encrypt/decrypt a file or files in a directory given a valid path, and an optional encryption/decryption key, using the ```encrypt()``` and ```decrypt()``` methods
+## How to use
+
+Modify `FileLockerFactory` and provide own implementation for the `getFileLocker()` method
+
+Get an instance of the `FileLocker` interface by calling the static method `getFileLocker()` of the `FileLockerFactory` class
+
+Encrypt/decrypt a file or files in a directory given a valid path, and an optional encryption/decryption key, using the `encrypt()` and `decrypt()` methods
 
 ## Disclaimer
 The code provided is for education purpose only.
