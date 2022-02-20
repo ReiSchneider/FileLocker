@@ -1,6 +1,7 @@
 import factory.FileLockerFactory;
 import service.FileLocker;
 
+import java.security.InvalidParameterException;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
@@ -35,7 +36,7 @@ public class FileLockerConsole {
                 choice = sc.nextInt();
 
                 if (!validOptions.contains(choice)) {
-                    throw new Exception();
+                    throw new IllegalArgumentException();
                 }
 
                 if (choice == 0) {
@@ -47,6 +48,11 @@ public class FileLockerConsole {
 
                 System.out.println("\n\nEnter file/directory path");
                 String filePath = sc.nextLine();
+
+                System.out.println("\n\nEnter password");
+                String key = sc.nextLine();
+
+                validatePathAndKey(filePath, key);
 
                 boolean success = switch (choice) {
                     case 1 -> fileLocker.encryptFile(filePath, null);
@@ -60,10 +66,22 @@ public class FileLockerConsole {
                     System.out.println(choice == 1 ? "Encryption failed!" : "Decryption failed!");
                 }
 
+            } catch (IllegalArgumentException iae) {
+                if (iae instanceof InvalidParameterException) {
+                    System.out.println("Invalid path or password!");
+                } else {
+                    System.out.printf("Invalid option: %s", choice);
+                }
             } catch (Exception e) {
-                System.out.printf("Invalid option: %s", choice);
+                e.printStackTrace();
             }
 
         } while (!Objects.equals(0, choice));
+    }
+
+    private static void validatePathAndKey(String path, String key) {
+        if (Objects.isNull(path) || path.isBlank() || Objects.isNull(key) || key.isBlank()) {
+            throw new InvalidParameterException();
+        }
     }
 }
