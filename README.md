@@ -2,7 +2,7 @@
 A console application written in Java 11 that can 'lock' and 'unlock' files
 
 # How to run 
-Make sure to run with at least Java 11.
+Make sure to compile and run with at least Java 11.
 
 Import the project to your IDE and run the `main` method from the `FileLockerConsole` console
 
