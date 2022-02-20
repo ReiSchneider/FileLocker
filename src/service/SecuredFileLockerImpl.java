@@ -126,9 +126,7 @@ public class SecuredFileLockerImpl implements FileLocker {
             byte[] oldStr = fileName.getBytes(StandardCharsets.UTF_8);
             byte[] newFile = new byte[fileBytes.length - oldStr.length];
 
-            for (int i = 0; i < newFile.length; i++) {
-                newFile[i] = fileBytes[i];
-            }
+            System.arraycopy(fileBytes, 0, newFile, 0, newFile.length);
 
             Path p1 = p.getParent().resolve(newFileName);
             Files.deleteIfExists(p);
