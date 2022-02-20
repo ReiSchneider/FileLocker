@@ -61,17 +61,19 @@ public class FileLockerImpl implements FileLocker {
     }
 
     private void encryptFiles(Path p, String key) throws IOException {
-        Files.walk(p).forEach(filePath -> {
-            try {
-                if (Files.isDirectory(filePath)) {
-                    encryptFiles(filePath, key);
-                } else {
-                    encryptFile(filePath, key);
-                }
-            } catch (IOException e) {
-                logger.warning(e.getMessage());
-            }
-        });
+        Files.walk(p)
+                .filter(filePath -> !filePath.equals(p))
+                .forEach(filePath -> {
+                    try {
+                        if (Files.isDirectory(filePath)) {
+                            encryptFiles(filePath, key);
+                        } else {
+                            encryptFile(filePath, key);
+                        }
+                    } catch (IOException e) {
+                        logger.warning(e.getMessage());
+                    }
+                });
     }
 
     public boolean decryptFile(String filePath, String key) throws IOException {
@@ -123,16 +125,18 @@ public class FileLockerImpl implements FileLocker {
     }
 
     private void decryptFiles(Path p, String key) throws IOException {
-        Files.walk(p).forEach(filePath -> {
-            try {
-                if (Files.isDirectory(filePath)) {
-                    decryptFiles(filePath, key);
-                } else {
-                    decryptFile(filePath, key);
-                }
-            } catch (IOException e) {
-                logger.warning(e.getMessage());
-            }
-        });
+        Files.walk(p)
+                .filter(filePath -> !filePath.equals(p))
+                .forEach(filePath -> {
+                    try {
+                        if (Files.isDirectory(filePath)) {
+                            decryptFiles(filePath, key);
+                        } else {
+                            decryptFile(filePath, key);
+                        }
+                    } catch (IOException e) {
+                        logger.warning(e.getMessage());
+                    }
+                });
     }
 }

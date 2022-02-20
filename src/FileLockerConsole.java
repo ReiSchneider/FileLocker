@@ -29,7 +29,7 @@ public class FileLockerConsole {
                 System.out.println("""
                         \nSelect Option to continue
                         [1] Encrypt
-                        [2] Decrypt;
+                        [2] Decrypt
                         [0] Exit""");
 
                 choice = sc.nextInt();
