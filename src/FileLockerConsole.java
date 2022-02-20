@@ -14,7 +14,7 @@ import java.util.Set;
 public class FileLockerConsole {
 
     private static final Set<Integer> validOptions = Set.of(0, 1, 2);
-    private static final FileLocker fileLocker = FileLockerFactory.getFileLocker();
+    private static final FileLocker fileLocker = FileLockerFactory.getSecuredFileLocker();
 
     public static void main(String[] args) {
         System.out.println("*************************************************************");
@@ -55,8 +55,8 @@ public class FileLockerConsole {
                 validatePathAndKey(filePath, key);
 
                 boolean success = switch (choice) {
-                    case 1 -> fileLocker.encryptFile(filePath, null);
-                    case 2 -> fileLocker.decryptFile(filePath, null);
+                    case 1 -> fileLocker.encryptFile(filePath, key);
+                    case 2 -> fileLocker.decryptFile(filePath, key);
                     default -> false;
                 };
 
