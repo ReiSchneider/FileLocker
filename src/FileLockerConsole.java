@@ -1,11 +1,15 @@
 import factory.FileLockerFactory;
 import service.FileLocker;
 
-import javax.print.attribute.standard.NumberUp;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
+/**
+ * Sample implementation of the FileLocker with a Console application
+ *
+ * @author Kyle Cancio
+ */
 public class FileLockerConsole {
 
     private static final Set<Integer> validOptions = Set.of(0, 1, 2);
