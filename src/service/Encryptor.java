@@ -14,11 +14,11 @@ public final class Encryptor {
     }
 
     public static byte[] encrypt(byte[] data, byte[] key) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        return cipherBytes(data, key, Cipher.ENCRYPT_MODE);
+        return cipherBytes(data, wrapKey(key), Cipher.ENCRYPT_MODE);
     }
 
     public static byte[] decrypt(byte[] data, byte[] key) throws NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        return cipherBytes(data, key, Cipher.DECRYPT_MODE);
+        return cipherBytes(data, wrapKey(key), Cipher.DECRYPT_MODE);
     }
 
     private static byte[] wrapKey(byte[] key) {

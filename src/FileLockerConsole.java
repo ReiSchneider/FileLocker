@@ -2,6 +2,7 @@ import factory.FileLockerFactory;
 import service.FileLocker;
 
 import java.security.InvalidParameterException;
+import java.util.InputMismatchException;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
@@ -61,12 +62,12 @@ public class FileLockerConsole {
                 };
 
                 if (success) {
-                    System.out.println(choice == 1 ? "Encryption success!" : "Decryption success!");
+                    System.out.println(choice == 1 ? "Encryption finished!" : "Decryption finished!");
                 } else {
-                    System.out.println(choice == 1 ? "Encryption failed!" : "Decryption failed!");
+                    System.out.println(choice == 1 ? "Encryption finished with errors!" : "Decryption finished with errors!");
                 }
 
-            } catch (IllegalArgumentException iae) {
+            } catch (InputMismatchException | IllegalArgumentException iae) {
                 if (iae instanceof InvalidParameterException) {
                     System.out.println("Invalid path or password!");
                 } else {

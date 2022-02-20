@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -30,44 +32,56 @@ public class SecuredFileLockerImpl implements FileLocker {
         }
 
         if (Files.isDirectory(p)) {
-            encryptFiles(p, key);
+            return encryptFiles(p, key);
         } else {
-            encryptFile(p, key);
+            return encryptFile(p, key);
         }
-
-        return true;
-
     }
 
-    private void encryptFile(Path p, String key) throws Exception {
+    private boolean encryptFile(Path p, String key) {
         logger.info(String.format("Encrypting file: %s", p));
+        try {
+            String pFileName = p.getFileName().toString();
+            Files.writeString(p, "\nxx>>" + pFileName, StandardOpenOption.APPEND);
 
-        String pFileName = p.getFileName().toString();
+            byte[] b = Files.readAllBytes(p);
+            byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
 
-        byte[] b = Files.readAllBytes(p);
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+            b = Encryptor.encrypt(b, keyBytes);
 
-        b = Encryptor.encrypt(b, keyBytes);
+            Path newPath = p.getParent().resolve(UUID.randomUUID().toString());
 
-        Files.write(p, b);
+            Files.deleteIfExists(p);
+            Files.write(newPath, b);
 
-        Files.writeString(p, "\nxx>>" + pFileName, StandardOpenOption.APPEND);
+            return true;
+        } catch (Exception e) {
+            logger.warning("Failed to encrypt " + p);
+        }
+        return false;
     }
 
-    private void encryptFiles(Path p, String key) throws Exception {
+    private boolean encryptFiles(Path p, String key) throws Exception {
+        AtomicBoolean success = new AtomicBoolean(true);
+
         Files.walk(p)
                 .filter(filePath -> !filePath.equals(p))
                 .forEach(filePath -> {
                     try {
+                        boolean successful = success.get();
                         if (Files.isDirectory(filePath)) {
-                            encryptFiles(filePath, key);
+                            successful &= encryptFiles(filePath, key);
                         } else {
-                            encryptFile(filePath, key);
+                            successful &= encryptFile(filePath, key);
                         }
+                        success.set(successful);
                     } catch (Exception e) {
                         logger.warning(e.getMessage());
+                        logger.warning("Failed to decrypt file " + filePath);
+                        success.set(false);
                     }
                 });
+        return success.get();
     }
 
     public boolean decryptFile(String filePath, String key) throws Exception {
@@ -84,57 +98,68 @@ public class SecuredFileLockerImpl implements FileLocker {
         }
 
         if (Files.isDirectory(p)) {
-            decryptFiles(p, key);
+            return decryptFiles(p, key);
         } else {
-            decryptFile(p, key);
+            return decryptFile(p, key);
         }
-
-        return true;
     }
 
-    private void decryptFile(Path p, String key) throws Exception {
+    private boolean decryptFile(Path p, String key) {
         logger.info(String.format("Decrypting file: %s", p));
+        try {
+            byte[] fileBytes = Files.readAllBytes(p);
+            byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
 
-        byte[] fileBytes = Files.readAllBytes(p);
-        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+            fileBytes = Encryptor.decrypt(fileBytes, keyBytes);
 
-        String[] st = new String(fileBytes).split("\n");
+            String[] st = new String(fileBytes).split("\n");
 
-        String fileName = st[st.length - 1];
+            String fileName = st[st.length - 1];
 
-        if (!fileName.contains("xx>>")) {
-            logger.warning("Invalid encrypted file");
-            return;
+            if (!fileName.contains("xx>>")) {
+                logger.warning("Invalid encrypted file");
+                return false;
+            }
+
+            String newFileName = fileName.replace("xx>>", "");
+
+            byte[] oldStr = fileName.getBytes(StandardCharsets.UTF_8);
+            byte[] newFile = new byte[fileBytes.length - oldStr.length];
+
+            for (int i = 0; i < newFile.length; i++) {
+                newFile[i] = fileBytes[i];
+            }
+
+            Path p1 = p.getParent().resolve(newFileName);
+            Files.deleteIfExists(p);
+            Files.write(p1, newFile);
+
+            return true;
+        } catch (Exception e) {
+            logger.warning("Failed to decrypt " + p);
         }
-
-        String newFileName = fileName.replace("xx>>", "");
-
-        byte[] oldStr = fileName.getBytes(StandardCharsets.UTF_8);
-        byte[] newFile = new byte[fileBytes.length - oldStr.length];
-
-        for (int i = 0; i < newFile.length; i++) {
-            newFile[i] = fileBytes[i];
-        }
-
-        newFile = Encryptor.decrypt(newFile, keyBytes);
-
-        Path p1 = p.getParent().resolve(newFileName);
-        Files.write(p1, newFile);
+        return false;
     }
 
-    private void decryptFiles(Path p, String key) throws Exception {
+    private boolean decryptFiles(Path p, String key) throws Exception {
+        AtomicBoolean success = new AtomicBoolean(true);
         Files.walk(p)
                 .filter(filePath -> !filePath.equals(p))
                 .forEach(filePath -> {
                     try {
+                        boolean successful = success.get();
                         if (Files.isDirectory(filePath)) {
-                            decryptFiles(filePath, key);
+                            successful &= decryptFiles(filePath, key);
                         } else {
-                            decryptFile(filePath, key);
+                            successful &= decryptFile(filePath, key);
                         }
+                        success.set(successful);
                     } catch (Exception e) {
                         logger.warning(e.getMessage());
+                        logger.warning("Failed to decrypt file " + filePath);
+                        success.set(false);
                     }
                 });
+        return success.get();
     }
 }
