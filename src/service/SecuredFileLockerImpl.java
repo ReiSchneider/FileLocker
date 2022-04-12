@@ -53,7 +53,6 @@ public class SecuredFileLockerImpl implements FileLocker {
 
             Files.deleteIfExists(p);
             Files.write(newPath, b);
-
             return true;
         } catch (Exception e) {
             logger.warning("Failed to encrypt " + p);
@@ -64,7 +63,12 @@ public class SecuredFileLockerImpl implements FileLocker {
     private boolean encryptFiles(Path p, String key) throws Exception {
         AtomicBoolean success = new AtomicBoolean(true);
 
+        /*
+            Files are converted to a List before recreating into a Stream to prevent the newly encrypted files from being read and encrypted again
+         */
         Files.walk(p)
+                .toList()
+                .stream()
                 .filter(filePath -> !filePath.equals(p))
                 .forEach(filePath -> {
                     try {
@@ -134,6 +138,7 @@ public class SecuredFileLockerImpl implements FileLocker {
 
             return true;
         } catch (Exception e) {
+            logger.warning(e.getMessage());
             logger.warning("Failed to decrypt " + p);
         }
         return false;
@@ -141,7 +146,13 @@ public class SecuredFileLockerImpl implements FileLocker {
 
     private boolean decryptFiles(Path p, String key) throws Exception {
         AtomicBoolean success = new AtomicBoolean(true);
+
+        /*
+            Files are converted to a List before recreating into a Stream to prevent the newly decrypted files from being read and decrypted again
+        */
         Files.walk(p)
+                .toList()
+                .stream()
                 .filter(filePath -> !filePath.equals(p))
                 .forEach(filePath -> {
                     try {
