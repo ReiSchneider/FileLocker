@@ -17,6 +17,13 @@ Get an instance of the `FileLocker` interface by calling the static method `getF
 
 Encrypt/decrypt a file or files in a directory given a valid path, and an optional encryption/decryption key, using the `encrypt()` and `decrypt()` methods
 
+## JAR File
+
+You can also download an executable jar file via the [releases](https://github.com/ReiSchneider/FileLocker/releases) page
+
+Execute via (Replace <file name> with the file name of the downloaded jar)
+```java -jar <file name>.jar```
+
 ## Disclaimer
 The code provided is for education purpose only.
 
