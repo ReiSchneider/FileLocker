@@ -13,6 +13,7 @@ import java.util.logging.Logger;
  * Provides a basic procedure of making a file unrecognizable but reversible
  * <p>
  * TODO: Actual encryption of file bytes using encryption methods
+ * v0.0.1
  *
  * @author Kyle Cancio
  */

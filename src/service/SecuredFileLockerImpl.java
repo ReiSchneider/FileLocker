@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 
 /**
  * Implementation of the {@link FileLocker} interface using encryption
+ * <p>
+ * v0.0.1
  *
  * @author Kyle Cancio
  */
@@ -66,25 +68,21 @@ public class SecuredFileLockerImpl implements FileLocker {
         /*
             Files are converted to a List before recreating into a Stream to prevent the newly encrypted files from being read and encrypted again
          */
-        Files.walk(p)
-                .toList()
-                .stream()
-                .filter(filePath -> !filePath.equals(p))
-                .forEach(filePath -> {
-                    try {
-                        boolean successful = success.get();
-                        if (Files.isDirectory(filePath)) {
-                            successful &= encryptFiles(filePath, key);
-                        } else {
-                            successful &= encryptFile(filePath, key);
-                        }
-                        success.set(successful);
-                    } catch (Exception e) {
-                        logger.warning(e.getMessage());
-                        logger.warning("Failed to decrypt file " + filePath);
-                        success.set(false);
-                    }
-                });
+        Files.walk(p).toList().stream().filter(filePath -> !filePath.equals(p)).forEach(filePath -> {
+            try {
+                boolean successful = success.get();
+                if (Files.isDirectory(filePath)) {
+                    successful &= encryptFiles(filePath, key);
+                } else {
+                    successful &= encryptFile(filePath, key);
+                }
+                success.set(successful);
+            } catch (Exception e) {
+                logger.warning(e.getMessage());
+                logger.warning("Failed to decrypt file " + filePath);
+                success.set(false);
+            }
+        });
         return success.get();
     }
 
@@ -150,25 +148,21 @@ public class SecuredFileLockerImpl implements FileLocker {
         /*
             Files are converted to a List before recreating into a Stream to prevent the newly decrypted files from being read and decrypted again
         */
-        Files.walk(p)
-                .toList()
-                .stream()
-                .filter(filePath -> !filePath.equals(p))
-                .forEach(filePath -> {
-                    try {
-                        boolean successful = success.get();
-                        if (Files.isDirectory(filePath)) {
-                            successful &= decryptFiles(filePath, key);
-                        } else {
-                            successful &= decryptFile(filePath, key);
-                        }
-                        success.set(successful);
-                    } catch (Exception e) {
-                        logger.warning(e.getMessage());
-                        logger.warning("Failed to decrypt file " + filePath);
-                        success.set(false);
-                    }
-                });
+        Files.walk(p).toList().stream().filter(filePath -> !filePath.equals(p)).forEach(filePath -> {
+            try {
+                boolean successful = success.get();
+                if (Files.isDirectory(filePath)) {
+                    successful &= decryptFiles(filePath, key);
+                } else {
+                    successful &= decryptFile(filePath, key);
+                }
+                success.set(successful);
+            } catch (Exception e) {
+                logger.warning(e.getMessage());
+                logger.warning("Failed to decrypt file " + filePath);
+                success.set(false);
+            }
+        });
         return success.get();
     }
 }
