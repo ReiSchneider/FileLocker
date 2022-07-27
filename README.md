@@ -4,7 +4,7 @@ A console application written in Java that can "lock" and "unlock" files
 Uses a `AES/ECB/PKCS5Padding` transformation algorithm to encrypt/decrypt the bytes of a given file
 
 # Download
-Download a sample executable jar or an _.exe_ file in the [releases](https://github.com/ReiSchneider/FileLocker/releases) page
+Download a sample executable jar or a zipped _.exe_ file in the [releases](https://github.com/ReiSchneider/FileLocker/releases) page
 
 For the _.jar_ version, execute via (Replace <file name> with the file name of the downloaded jar)
 
